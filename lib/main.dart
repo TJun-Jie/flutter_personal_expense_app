@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import './transaction.dart';
+import 'package:personal_expenses_app/widgets/user_transaction.dart';
 
 void main() {
   runApp(MyApp());
@@ -14,65 +14,33 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(title: 'Flutters Demo Home Page'),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
+class MyHomePage extends StatelessWidget {
   MyHomePage({Key key, @required this.title}) : super(key: key);
 
   final String title;
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  final List<Transaction> transactions = [
-    Transaction(
-      id: '1',
-      title: 'New Shoes',
-      amount: 69.99,
-      date: DateTime.now(),
-    ),
-    Transaction(
-      id: '2',
-      title: 'Weekly Groceries',
-      amount: 32.55,
-      date: DateTime.now(),
-    ),
-    Transaction(
-      id: '3',
-      title: 'New Phone',
-      amount: 1050.99,
-      date: DateTime.now(),
-    ),
-  ];
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(title),
       ),
       body: Column(
         children: <Widget>[
-          Card(
-            color: Colors.blue,
-            child: Container(
+          Container(
+            width: double.infinity,
+            child: Card(
+              color: Colors.blue,
               child: Text('Chart!'),
-              width: double.infinity,
+              elevation: 5,
             ),
-            elevation: 5,
           ),
-          Column(
-            children: transactions
-                .map((tx) => Card(
-                        child: Text(
-                      tx.title,
-                    )))
-                .toList(),
-          )
+          UserTransaction(),
         ],
       ),
     );
