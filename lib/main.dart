@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:personal_expenses_app/widgets/chart.dart';
 import 'package:personal_expenses_app/widgets/new_transaction.dart';
 import 'package:personal_expenses_app/widgets/transaction_list.dart';
 import './models/transaction.dart';
@@ -57,25 +58,33 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  List<Transaction> get _recentTransactions {
+    return _userTransactions.where((tx) {
+      return tx.date.isAfter(DateTime.now().subtract(
+        Duration(days: 7),
+      ));
+    }).toList();
+  }
+
   final List<Transaction> _userTransactions = [
-    Transaction(
-      id: '1',
-      title: 'New Shoes',
-      amount: 69.99,
-      date: DateTime.now(),
-    ),
-    Transaction(
-      id: '2',
-      title: 'Weekly Groceries',
-      amount: 32.55,
-      date: DateTime.now(),
-    ),
-    Transaction(
-      id: '3',
-      title: 'New Phone',
-      amount: 1050.99,
-      date: DateTime.now(),
-    ),
+    // Transaction(
+    //   id: '1',
+    //   title: 'New Shoes',
+    //   amount: 69.99,
+    //   date: DateTime.now(),
+    // ),
+    // Transaction(
+    //   id: '2',
+    //   title: 'Weekly Groceries',
+    //   amount: 32.55,
+    //   date: DateTime.now(),
+    // ),
+    // Transaction(
+    //   id: '3',
+    //   title: 'New Phone',
+    //   amount: 1050.99,
+    //   date: DateTime.now(),
+    // ),
   ];
 
   void _startAddNewTransaction(BuildContext ctx) {
@@ -98,20 +107,17 @@ class _MyHomePageState extends State<MyHomePage> {
               icon: Icon(Icons.add)),
         ],
       ),
-      body: Column(
-        children: <Widget>[
-          Container(
-            width: double.infinity,
-            child: Card(
-              color: Colors.blue,
-              child: Text('Chart!'),
-              elevation: 5,
+      body: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            Chart(
+              recentTransactions: _recentTransactions,
             ),
-          ),
-          TransactionList(
-            userTransactions: _userTransactions,
-          ),
-        ],
+            TransactionList(
+              userTransactions: _userTransactions,
+            ),
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
