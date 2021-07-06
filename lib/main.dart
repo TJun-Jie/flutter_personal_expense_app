@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:personal_expenses_app/widgets/chart.dart';
 import 'package:personal_expenses_app/widgets/new_transaction.dart';
 import 'package:personal_expenses_app/widgets/transaction_list.dart';
 import './models/transaction.dart';
 
 void main() {
+  // For landscape mode
+  // WidgetsFlutterBinding.ensureInitialized();
+  // SystemChrome.setPreferredOrientations([
+  //   DeviceOrientation.portraitDown,
+  //   DeviceOrientation.portraitUp,
+  // ]);
   runApp(MyApp());
 }
 
@@ -48,6 +55,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  bool _showChart = true;
+
   void _addNewTransaction(String title, double amount, DateTime chosenDate) {
     final newTx = Transaction(
         id: _userTransactions.length.toString(),
@@ -105,25 +114,68 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-        actions: [
-          IconButton(
-              onPressed: () => {_startAddNewTransaction(context)},
-              icon: Icon(Icons.add)),
-        ],
+    final mediaQuery = MediaQuery.of(context);
+
+    final appBar = AppBar(
+      title: Text(widget.title),
+      actions: [
+        IconButton(
+            onPressed: () => {_startAddNewTransaction(context)},
+            icon: Icon(Icons.add)),
+      ],
+    );
+    final appBarHeight = appBar.preferredSize.height;
+    final statusBar = mediaQuery.padding.top;
+
+    final isLandscape = mediaQuery.orientation == Orientation.landscape;
+
+    final txListWidget = Container(
+      height: (mediaQuery.size.height - appBarHeight - statusBar) * 0.7,
+      child: TransactionList(
+        userTransactions: _userTransactions,
+        deleteTransactions: _deleteTransaction,
       ),
+    );
+    return Scaffold(
+      appBar: appBar,
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            Chart(
-              recentTransactions: _recentTransactions,
-            ),
-            TransactionList(
-              userTransactions: _userTransactions,
-              deleteTransactions: _deleteTransaction,
-            ),
+            if (isLandscape)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Show Chart'),
+                  Switch(
+                    value: _showChart,
+                    onChanged: (value) {
+                      setState(() {
+                        _showChart = value;
+                      });
+                    },
+                  )
+                ],
+              ),
+            if (!isLandscape)
+              Container(
+                height:
+                    (mediaQuery.size.height - appBarHeight - statusBar) * 0.25,
+                child: Chart(
+                  recentTransactions: _recentTransactions,
+                ),
+              ),
+            if (!isLandscape) txListWidget,
+            if (isLandscape)
+              _showChart
+                  ? Container(
+                      height:
+                          (mediaQuery.size.height - appBarHeight - statusBar) *
+                              0.7,
+                      child: Chart(
+                        recentTransactions: _recentTransactions,
+                      ),
+                    )
+                  : txListWidget
           ],
         ),
       ),
